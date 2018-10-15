@@ -9,21 +9,6 @@ const compression = require('compression');
 
 require('dotenv').config();
 
-const {
-    PUSHER_APP_ID,
-    PUSHER_APP_KEY,
-    PUSHER_APP_SECRET,
-} = process.env;
-
-const Pusher = require('pusher');
-const pusher = new Pusher({
-    appId: PUSHER_APP_ID,
-    key: PUSHER_APP_KEY,
-    secret: PUSHER_APP_SECRET,
-    cluster: 'eu',
-    encrypted: true
-});
-
 const app = express();
 
 app.use(cors({
@@ -45,7 +30,7 @@ const cities = require('./cities');
 const countries = require('./countries');
 const latest = require('./latest');
 
-const args = { app, pusher };
+const args = { app };
 
 cities.init(args);
 countries.init(args);
