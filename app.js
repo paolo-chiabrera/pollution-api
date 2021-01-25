@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const healthcheck = require('express-healthcheck');
 const logger = require('morgan');
@@ -25,15 +24,5 @@ app.use(apicache.middleware('5 minutes'));
 const index = require('./routes/index');
 
 app.use(index);
-
-const cities = require('./cities');
-const countries = require('./countries');
-const latest = require('./latest');
-
-const args = { app };
-
-cities.init(args);
-countries.init(args);
-latest.init(args);
 
 module.exports = app;
