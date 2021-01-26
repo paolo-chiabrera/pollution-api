@@ -2,7 +2,7 @@ const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
 
-const URL = `/latest`;
+const URL = `/v1/latest`;
 
 const getLatest = () => retry(async () => {
     const { data } = await axios
@@ -11,4 +11,15 @@ const getLatest = () => retry(async () => {
     return data.results;
 });
 
-module.exports = () => cache.wrap('getLatest', () => getLatest());
+const getLatestCached = () => cache.wrap('latest', () => getLatest());
+
+const getLatestByCountry = (countryCode = '') => getLatestCached().then((data) => data.filter(({ country }) => countryCode.toLocaleLowerCase() === country.toLocaleLowerCase()));
+
+const getLatestByCountryCached = (countryCode = '') => cache.wrap(`latest:${countryCode}`, () => getLatestByCountry(countryCode));
+
+module.exports = {
+    getLatest,
+    getLatestCached,
+    getLatestByCountry,
+    getLatestByCountryCached,
+};
