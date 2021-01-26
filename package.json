@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint . --ext .js",
     "lint:fix": "npm run lint --fix",
+    "postinstall": "husky install",
     "start": "node ./bin/www"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "morgan": "~1.9.0"
   },
   "devDependencies": {
-    "eslint": "^7.18.0"
+    "eslint": "^7.18.0",
+    "husky": "^5.0.6"
   }
 }
