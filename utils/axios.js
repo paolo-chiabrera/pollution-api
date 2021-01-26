@@ -5,10 +5,10 @@ const instance = axios.create({
     timeout: 5000,
 });
 
-instance.interceptors.request.use(request => {
-    const { method, url } = request;
+instance.interceptors.request.use(config => {
+    const { method, url } = config;
     console.log(`STARTED: ${method} - ${url}`);
-    return request;
+    return config;
 })
 
 instance.interceptors.response.use(response => {
