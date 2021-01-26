@@ -61,4 +61,17 @@ router.get('/latest', async (req, res) => {
   }
 });
 
+router.get('/latest/:countryCode', async (req, res) => {
+  const { params } = req;
+
+  try {
+    const data = await getLatest();
+
+    res.status(200).json(data.filter(({ country }) => params.countryCode.toLocaleLowerCase() === country.toLocaleLowerCase()));
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Something bad bad happened!');
+  }
+});
+
 module.exports = router;
