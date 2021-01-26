@@ -1,6 +1,5 @@
 const express = require('express');
 
-const getCities = require('../fetchers/cities');
 const getCountries = require('../fetchers/countries');
 const { getLatestByCountryCached } = require('../fetchers/latest');
 const { getAveragesByCountryCached } = require('../fetchers/averages');
@@ -15,18 +14,6 @@ router.get('/', (req, res) => {
     name,
     version,
   });
-});
-
-/* GET cities. */
-router.get('/cities', async (req, res) => {
-  try {
-    const data = await getCities();
-
-    res.status(200).json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Something bad bad happened!');
-  }
 });
 
 /* GET countries. */
