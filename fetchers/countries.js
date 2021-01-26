@@ -6,7 +6,9 @@ const URL = `/v1/countries`;
 
 const getCountries = () => retry(async () => {
     const { data } = await axios
-        .get(URL);
+        .get(URL, {
+            limit: 10000,
+        });
 
     return data.results;
 });

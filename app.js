@@ -8,6 +8,8 @@ const compression = require('compression');
 
 require('dotenv').config();
 
+const poller = require('./fetchers/poller');
+
 const app = express();
 
 app.use(cors({
@@ -24,5 +26,7 @@ app.use(apicache.middleware('5 minutes'));
 const index = require('./routes/index');
 
 app.use(index);
+
+poller.run();
 
 module.exports = app;
