@@ -7,7 +7,7 @@ const ENV = NODE_ENV || 'development';
 
 const cache = cacheManager.caching({
     prefix: `pollution:api:${ENV}`,
-    refreshThreshold: (CACHE_TTL_SECONDS || 60 * 60) / 2, // seconds
+    refreshThreshold: (parseInt(CACHE_TTL_SECONDS, 10) || 60 * 60) / 2, // seconds
     store: redisStore,
     ttl: CACHE_TTL_SECONDS || 60 * 60, // seconds
     url: DATABASE_URL,

@@ -6,7 +6,7 @@ const getCountries = require('./countries');
 const { getAveragesByCountryCached } = require('./averages');
 const { getLatestByCountryCached } = require('./latest');
 
-const queue = new pQueue({ concurrency: QUEUE_CONCURRENCY || 4 });
+const queue = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 4 });
 
 queue.onEmpty(() => {
     console.log('Queue EMPTY!');
@@ -26,7 +26,7 @@ const fetchData = () => getCountries()
 const run = () => {
     fetchData();
 
-    setInterval(fetchData, (CACHE_TTL_SECONDS || 60 * 60) / 2 * 1000);
+    setInterval(fetchData, (parseInt(CACHE_TTL_SECONDS, 10) || 60 * 60) / 2 * 1000);
 };
 
 module.exports = {
