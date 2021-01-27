@@ -11,8 +11,10 @@ const fetchLatestByCountry = (countryCode = '') => retry(async () => {
 
     const { data: { results } } = await axios
         .get(URL, {
-            country: countryCode,
-            limit: 10000,
+            params: {
+                country: countryCode,
+                limit: 10000,
+            },
         });
 
     return results;
