@@ -1,5 +1,6 @@
 {
   "name": "pollution-api",
+  "description": "API based on https://docs.openaq.org/",
   "version": "1.0.0",
   "private": true,
   "engines": {
@@ -26,7 +27,9 @@
     "express": "~4.16.0",
     "express-healthcheck": "^0.1.0",
     "morgan": "~1.9.0",
-    "p-queue": "^6.6.2"
+    "p-queue": "^6.6.2",
+    "swagger-jsdoc": "^6.0.1",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "eslint": "^7.18.0",
