@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
-app.use(apicache.middleware('5 minutes'));
+app.use(apicache.middleware('1 hour'));
 
 const index = require('./routes/index');
 
