@@ -1,25 +1,54 @@
-const { stringify } = require('querystring');
-
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
 
 const URL = `/v1/latest`;
 
-const getLatestByCountry = (countryCode = '') => retry(async () => {
-    const qs = stringify({
-        country: countryCode,
-        limit: 10000,
-    });
+const getKey = (countryCode = '') => `latest:${countryCode}`;
+
+const fetchLatestByCountry = (countryCode = '') => retry(async () => {
+    console.log(`FETCH: ${URL} - ${countryCode}`);
+
     const { data: { results } } = await axios
-        .get(`${URL}?${qs}`);
+        .get(URL, {
+            country: countryCode,
+            limit: 10000,
+        });
 
     return results;
 });
 
-const getLatestByCountryCached = (countryCode = '') => cache.wrap(`latest:${countryCode}`, () => getLatestByCountry(countryCode));
+const setLatestByCountry = async (countryCode = '') => {
+    try {
+        const data = await fetchLatestByCountry(countryCode);
+        await cache.setProm(getKey(countryCode), data);
+
+        console.log(`CACHED: ${URL} - ${countryCode} [${data.length} items]`);
+
+        return data;
+    } catch (err) {
+        console.error('setLatestByCountry', err);
+    }
+};
+
+const getLatestByCountry = async (countryCode = '') => {
+    try {
+        let data = await cache.getProm(getKey(countryCode));
+
+        if (data) {
+            return data;
+        }
+
+        data = await setLatestByCountry(countryCode);
+
+        return data;
+    } catch (err) {
+        console.error('getLatestByCountry', err);
+    }
+};
+
 
 module.exports = {
     getLatestByCountry,
-    getLatestByCountryCached,
+    setLatestByCountry,
 };
