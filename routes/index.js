@@ -6,17 +6,15 @@ const { getLatestByCountry } = require('../fetchers/latest');
 
 const router = express.Router();
 
-const { name, version } = require('../package.json');
-
-/* GET home page. */
-router.get('/', (req, res) => {
-  res.json({
-    name,
-    version,
-  });
-});
-
-/* GET countries. */
+/**
+ * @swagger
+ *
+ * /countries:
+ *   get:
+ *     summary: List of all the countries available
+ *     produces:
+ *       - application/json
+ */
 router.get('/countries', async (req, res) => {
   try {
     const data = await getCountries();
@@ -28,9 +26,28 @@ router.get('/countries', async (req, res) => {
   }
 });
 
-/* GET latest. */
+/**
+ * @swagger
+ *
+ * /latest/{countryCode}:
+ *   get:
+ *     summary: List of the latests measurements for the given country
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: countryCode
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: 2 letters country code as defined by ISO ALPHA-2
+ */
 router.get('/latest/:countryCode', async (req, res) => {
   const { params: { countryCode } } = req;
+
+  if (!countryCode) {
+    res.status(500).send('Please provide a countryCode');
+    return;
+  }
 
   try {
     const data = await getLatestByCountry(countryCode);
@@ -42,9 +59,28 @@ router.get('/latest/:countryCode', async (req, res) => {
   }
 });
 
-/* GET averages. */
+/**
+ * @swagger
+ *
+ * /averages/{countryCode}:
+ *   get:
+ *     summary: List of the average measurements for the given country
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: countryCode
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: 2 letters country code as defined by ISO ALPHA-2
+ */
 router.get('/averages/:countryCode', async (req, res) => {
   const { params: { countryCode } } = req;
+
+  if (!countryCode) {
+    res.status(500).send('Please provide a countryCode');
+    return;
+  }
 
   try {
     const data = await getAveragesByCountry(countryCode);

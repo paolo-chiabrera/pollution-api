@@ -5,9 +5,12 @@ const logger = require('morgan');
 const apicache = require('apicache');
 const cors = require('cors');
 const compression = require('compression');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
 
 require('dotenv').config();
 
+const swaggerOptions = require('./swagger-options.js');
 const poller = require('./fetchers/poller');
 
 const app = express();
@@ -21,11 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
-app.use(apicache.middleware('5 minutes'));
+app.use(apicache.middleware('1 hour'));
 
 const index = require('./routes/index');
 
 app.use(index);
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(swaggerOptions)));
 
 poller.run();
 
