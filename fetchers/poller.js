@@ -3,6 +3,7 @@ const pQueue = require('p-queue').default;
 const { POLLING_INTERVAL_SECONDS, QUEUE_CONCURRENCY } = process.env;
 
 const { getCountries, setCountries } = require('./countries');
+const { setCitiesByCountry } = require('./cities');
 const { setAveragesByCountry } = require('./averages');
 const { setLatestByCountry } = require('./latest');
 
@@ -19,6 +20,7 @@ const fetchData = async () => {
         queue.add(() => setCountries());
 
         countries.forEach(({ code }) => {
+            queue.add(() => setCitiesByCountry(code));
             queue.add(() => setAveragesByCountry(code));
             queue.add(() => setLatestByCountry(code));
         });
