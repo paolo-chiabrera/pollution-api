@@ -1,4 +1,4 @@
-const { chain, isEmpty } = require('lodash');
+const { chain, isEmpty, omit } = require('lodash');
 
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
@@ -8,7 +8,7 @@ const URL = `/v1/cities`;
 
 const getKey = (countryCode = '') => `cities:${countryCode}`;
 
-const isValidCity = (str = '') => !isEmpty(str) && str.toLowerCase() !== 'n/a';
+const isValidName = (str = '') => !isEmpty(str) && str.toLowerCase() !== 'n/a';
 
 const fetchCities = (countryCode = '') => retry(async () => {
     console.log(`FETCH: ${URL} - ${countryCode}`);
@@ -22,7 +22,8 @@ const fetchCities = (countryCode = '') => retry(async () => {
         });
 
     return chain(results)
-        .filter(({ city, name }) => isValidCity(city) && isValidCity(name))
+        .filter(({ name }) => isValidName(name))
+        .map(entry => omit(entry, 'city'))
         .sortBy('name')
         .value();
 });
