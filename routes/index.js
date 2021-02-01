@@ -1,6 +1,7 @@
 const express = require('express');
 
 const { getAveragesByCountry } = require('../fetchers/averages');
+const { getCitiesByCountry } = require('../fetchers/cities');
 const { getCountries } = require('../fetchers/countries');
 const { getLatestByCountry } = require('../fetchers/latest');
 
@@ -18,6 +19,39 @@ const router = express.Router();
 router.get('/countries', async (req, res) => {
   try {
     const data = await getCountries();
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Something bad bad happened!');
+  }
+});
+
+/**
+ * @swagger
+ *
+ * /cities/{countryCode}:
+ *   get:
+ *     summary: List of the available cities for the given country
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: countryCode
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: 2 letters country code as defined by ISO ALPHA-2
+ */
+router.get('/cities/:countryCode', async (req, res) => {
+  const { params: { countryCode } } = req;
+
+  if (!countryCode) {
+    res.status(500).send('Please provide a countryCode');
+    return;
+  }
+
+  try {
+    const data = await getCitiesByCountry(countryCode);
 
     res.json(data);
   } catch (err) {

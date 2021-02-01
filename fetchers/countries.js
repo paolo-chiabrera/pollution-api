@@ -10,7 +10,9 @@ const fetchCountries = () => retry(async () => {
 
     const { data } = await axios
         .get(URL, {
-            limit: 10000,
+            params: {
+                limit: 10000,
+            },
         });
 
     return data.results;
