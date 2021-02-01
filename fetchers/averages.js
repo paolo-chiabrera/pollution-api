@@ -1,3 +1,5 @@
+const { chain, isEqual, sortBy } = require('lodash');
+
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
@@ -7,11 +9,12 @@ const URL = `/v2/averages`;
 const getKey = (countryCode = '') => `averages:${countryCode}`;
 
 const fetchAverages = (countryCode = '') => retry(async () => {
-    console.log(`FETCH: ${URL} - ${countryCode}`);
-
+    const temporal = 'day';
     const d = new Date();
     const today = new Date(d.getFullYear(), d.getMonth(), d.getDay());
     const oneYearAgo = new Date(d.getFullYear() - 1, d.getMonth(), d.getDay());
+
+    console.log(`FETCH: ${URL} - ${countryCode}`);
 
     const { data: { results } } = await axios
         .get(URL, {
@@ -21,11 +24,15 @@ const fetchAverages = (countryCode = '') => retry(async () => {
                 date_to: today.toISOString(),
                 limit: 100000,
                 spatial: 'country',
-                temporal: 'day',
+                temporal,
             },
         });
 
-    return results;
+    return chain(results)
+        .uniqWith(isEqual)
+        .groupBy(temporal)
+        .mapValues(group => sortBy(group, 'displayName'))
+        .value();
 });
 
 const setAverages = async (countryCode = '') => {
