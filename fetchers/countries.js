@@ -1,4 +1,4 @@
-const { sortBy } = require('lodash');
+const { size, sortBy } = require('lodash');
 
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
@@ -25,7 +25,7 @@ const setCountries = async () => {
         const data = await fetchCountries();
         await cache.setProm(KEY, data);
 
-        console.log(`CACHED: ${URL} [${data.length} items]`);
+        console.log(`CACHED: ${URL} [${size(data)} countries]`);
 
         return data;
     } catch (err) {
