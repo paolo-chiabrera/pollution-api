@@ -1,3 +1,5 @@
+const { chain, isEmpty } = require('lodash');
+
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
@@ -6,10 +8,12 @@ const URL = `/v1/cities`;
 
 const getKey = (countryCode = '') => `cities:${countryCode}`;
 
+const isValidCity = (str = '') => !isEmpty(str) && str.toLowerCase() !== 'n/a';
+
 const fetchCities = (countryCode = '') => retry(async () => {
     console.log(`FETCH: ${URL} - ${countryCode}`);
 
-    const { data } = await axios
+    const { data: { results } } = await axios
         .get(URL, {
             params: {
                 country: countryCode,
@@ -17,7 +21,10 @@ const fetchCities = (countryCode = '') => retry(async () => {
             },
         });
 
-    return data.results.filter(({ city, name }) => city.toLowerCase() !== 'n/a' && name.toLowerCase() !== 'n/a');
+    return chain(results)
+        .filter(({ city, name }) => isValidCity(city) && isValidCity(name))
+        .sortBy('name')
+        .value();
 });
 
 const setCitiesByCountry = async (countryCode = '') => {
@@ -29,7 +36,7 @@ const setCitiesByCountry = async (countryCode = '') => {
 
         return data;
     } catch (err) {
-        console.error('setCities', err);
+        console.error('setCitiesByCountry', err);
     }
 };
 
@@ -45,7 +52,7 @@ const getCitiesByCountry = async (countryCode = '') => {
 
         return data;
     } catch (err) {
-        console.error('getCities', err);
+        console.error('getCitiesByCountry', err);
     }
 };
 
