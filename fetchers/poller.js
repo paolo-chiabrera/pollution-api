@@ -3,11 +3,11 @@ const pQueue = require('p-queue').default;
 const { POLLING_INTERVAL_SECONDS, QUEUE_CONCURRENCY } = process.env;
 
 const { getCountries, setCountries } = require('./countries');
-const { setCitiesByCountry } = require('./cities');
-const { setAveragesByCountry } = require('./averages');
-const { setLatestByCountry } = require('./latest');
+const { getCitiesByCountry, setCitiesByCountry } = require('./cities');
+const { setAverages } = require('./averages');
+const { setLatest } = require('./latest');
 
-const queue = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 4 });
+const queue = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 8 });
 
 queue.onEmpty(() => {
     console.log('QUEUE: EMPTY');
@@ -19,10 +19,15 @@ const fetchData = async () => {
 
         queue.add(() => setCountries());
 
-        countries.forEach(({ code }) => {
+        countries.forEach(async ({ code }) => {
+            const cities = await getCitiesByCountry(code);
+
             queue.add(() => setCitiesByCountry(code));
-            queue.add(() => setAveragesByCountry(code));
-            queue.add(() => setLatestByCountry(code));
+
+            cities.forEach(({ name }) => {
+                queue.add(() => setAverages(code, name));
+                queue.add(() => setLatest(code, name));
+            });
         });
     } catch (err) {
         console.error('fetchData', err);

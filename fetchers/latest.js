@@ -1,56 +1,59 @@
+const { sortBy } = require('lodash');
+
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
 
 const URL = `/v1/latest`;
 
-const getKey = (countryCode = '') => `latest:${countryCode}`;
+const getKey = (countryCode = '', cityName = '') => `latest:${countryCode}:${cityName}`;
 
-const fetchLatestByCountry = (countryCode = '') => retry(async () => {
-    console.log(`FETCH: ${URL} - ${countryCode}`);
+const fetchLatest = (countryCode = '', cityName = '') => retry(async () => {
+    console.log(`FETCH: ${URL} - ${countryCode} - ${cityName}`);
 
     const { data: { results } } = await axios
         .get(URL, {
             params: {
                 country: countryCode,
+                city: cityName,
                 limit: 10000,
             },
         });
 
-    return results;
+    return sortBy(results, 'location');
 });
 
-const setLatestByCountry = async (countryCode = '') => {
+const setLatest = async (countryCode = '', cityName = '') => {
     try {
-        const data = await fetchLatestByCountry(countryCode);
-        await cache.setProm(getKey(countryCode), data);
+        const data = await fetchLatest(countryCode, cityName);
+        await cache.setProm(getKey(countryCode, cityName), data);
 
-        console.log(`CACHED: ${URL} - ${countryCode} [${data.length} items]`);
+        console.log(`CACHED: ${URL} - ${countryCode} - ${cityName} [${data.length} items]`);
 
         return data;
     } catch (err) {
-        console.error('setLatestByCountry', err);
+        console.error('setLatest', err);
     }
 };
 
-const getLatestByCountry = async (countryCode = '') => {
+const getLatest = async (countryCode = '', cityName = '') => {
     try {
-        let data = await cache.getProm(getKey(countryCode));
+        let data = await cache.getProm(getKey(countryCode, cityName));
 
         if (data) {
             return data;
         }
 
-        data = await setLatestByCountry(countryCode);
+        data = await setLatest(countryCode, cityName);
 
         return data;
     } catch (err) {
-        console.error('getLatestByCountry', err);
+        console.error('getLatest', err);
     }
 };
 
 
 module.exports = {
-    getLatestByCountry,
-    setLatestByCountry,
+    getLatest,
+    setLatest,
 };

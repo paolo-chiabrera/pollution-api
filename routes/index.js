@@ -1,9 +1,9 @@
 const express = require('express');
 
-const { getAveragesByCountry } = require('../fetchers/averages');
+const { getAverages } = require('../fetchers/averages');
 const { getCitiesByCountry } = require('../fetchers/cities');
 const { getCountries } = require('../fetchers/countries');
-const { getLatestByCountry } = require('../fetchers/latest');
+const { getLatest } = require('../fetchers/latest');
 
 const router = express.Router();
 
@@ -63,7 +63,7 @@ router.get('/cities/:countryCode', async (req, res) => {
 /**
  * @swagger
  *
- * /latest/{countryCode}:
+ * /latest/{countryCode}/{cityName}:
  *   get:
  *     summary: List of the latests measurements for the given country
  *     produces:
@@ -74,17 +74,27 @@ router.get('/cities/:countryCode', async (req, res) => {
  *         required: true
  *         type: string
  *         description: 2 letters country code as defined by ISO ALPHA-2
+ *       - name: cityName
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: Name of the city
  */
-router.get('/latest/:countryCode', async (req, res) => {
-  const { params: { countryCode } } = req;
+router.get('/latest/:countryCode/:cityName', async (req, res) => {
+  const { params: { cityName, countryCode } } = req;
 
   if (!countryCode) {
     res.status(500).send('Please provide a countryCode');
     return;
   }
 
+  if (!cityName) {
+    res.status(500).send('Please provide a cityName');
+    return;
+  }
+
   try {
-    const data = await getLatestByCountry(countryCode);
+    const data = await getLatest(countryCode, cityName);
 
     res.json(data);
   } catch (err) {
@@ -96,7 +106,7 @@ router.get('/latest/:countryCode', async (req, res) => {
 /**
  * @swagger
  *
- * /averages/{countryCode}:
+ * /averages/{countryCode}/{cityName}:
  *   get:
  *     summary: List of the average measurements for the given country
  *     produces:
@@ -107,17 +117,27 @@ router.get('/latest/:countryCode', async (req, res) => {
  *         required: true
  *         type: string
  *         description: 2 letters country code as defined by ISO ALPHA-2
+ *       - name: cityName
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: Name of the city
  */
 router.get('/averages/:countryCode', async (req, res) => {
-  const { params: { countryCode } } = req;
+  const { params: { cityName, countryCode } } = req;
 
   if (!countryCode) {
     res.status(500).send('Please provide a countryCode');
     return;
   }
 
+  if (!cityName) {
+    res.status(500).send('Please provide a cityName');
+    return;
+  }
+
   try {
-    const data = await getAveragesByCountry(countryCode);
+    const data = await getAverages(countryCode, cityName);
 
     res.json(data);
   } catch (err) {
