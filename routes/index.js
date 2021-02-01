@@ -123,7 +123,7 @@ router.get('/latest/:countryCode/:cityName', async (req, res) => {
  *         type: string
  *         description: Name of the city
  */
-router.get('/averages/:countryCode', async (req, res) => {
+router.get('/averages/:countryCode/:cityName', async (req, res) => {
   const { params: { cityName, countryCode } } = req;
 
   if (!countryCode) {
