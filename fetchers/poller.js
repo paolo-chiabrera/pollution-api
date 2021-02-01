@@ -7,9 +7,9 @@ const { getCitiesByCountry, setCitiesByCountry } = require('./cities');
 const { setAverages } = require('./averages');
 const { setLatest } = require('./latest');
 
-const queue = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 4 });
-const queueAverages = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 4 });
-const queueLatest = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 4 });
+const queue = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
+const queueAverages = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
+const queueLatest = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
 
 const fetchData = async () => {
     try {
@@ -21,10 +21,10 @@ const fetchData = async () => {
             const cities = await getCitiesByCountry(code);
 
             queue.add(() => setCitiesByCountry(code));
+            queueAverages.add(() => setAverages(code));
 
-            cities.forEach(({ name }) => {
-                queueAverages.add(() => setAverages(code, name));
-                queueLatest.add(() => setLatest(code, name));
+            cities.forEach(({ city }) => {
+                queueLatest.add(() => setLatest(code, city));
             });
         });
     } catch (err) {

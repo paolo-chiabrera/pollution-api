@@ -106,7 +106,7 @@ router.get('/latest/:countryCode/:cityName', async (req, res) => {
 /**
  * @swagger
  *
- * /averages/{countryCode}/{cityName}:
+ * /averages/{countryCode}:
  *   get:
  *     summary: List of the average measurements for the given country
  *     produces:
@@ -117,27 +117,17 @@ router.get('/latest/:countryCode/:cityName', async (req, res) => {
  *         required: true
  *         type: string
  *         description: 2 letters country code as defined by ISO ALPHA-2
- *       - name: cityName
- *         in: path
- *         required: true
- *         type: string
- *         description: Name of the city
  */
 router.get('/averages/:countryCode', async (req, res) => {
-  const { params: { cityName, countryCode } } = req;
+  const { params: { countryCode } } = req;
 
   if (!countryCode) {
     res.status(500).send('Please provide a countryCode');
     return;
   }
 
-  if (!cityName) {
-    res.status(500).send('Please provide a cityName');
-    return;
-  }
-
   try {
-    const data = await getAverages(countryCode, cityName);
+    const data = await getAverages(countryCode);
 
     res.json(data);
   } catch (err) {

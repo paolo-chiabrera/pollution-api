@@ -4,7 +4,7 @@ const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
 
-const URL = `/v1/latest`;
+const URL = `/v2/latest`;
 
 const getKey = (countryCode = '', cityName = '') => `latest:${countryCode}:${cityName}`;
 
@@ -14,9 +14,9 @@ const fetchLatest = (countryCode = '', cityName = '') => retry(async () => {
     const { data: { results } } = await axios
         .get(URL, {
             params: {
-                country: countryCode,
+                country_id: countryCode,
                 city: cityName,
-                limit: 10000,
+                limit: 100000,
             },
         });
 

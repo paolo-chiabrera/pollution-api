@@ -1,21 +1,23 @@
+const { sortBy } = require('lodash');
+
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
 const retry = require('../utils/retry');
 
 const KEY = 'countries';
-const URL = `/v1/countries`;
+const URL = `/v2/countries`;
 
 const fetchCountries = () => retry(async () => {
     console.log(`FETCH: ${URL}`);
 
-    const { data } = await axios
+    const { data: { results } } = await axios
         .get(URL, {
             params: {
-                limit: 10000,
+                limit: 100000,
             },
         });
 
-    return data.results;
+    return sortBy(results, 'code');
 });
 
 const setCountries = async () => {
