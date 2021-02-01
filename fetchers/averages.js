@@ -40,7 +40,7 @@ const setAverages = async (countryCode = '') => {
         const data = await fetchAverages(countryCode);
         await cache.setProm(getKey(countryCode), data);
 
-        console.log(`CACHED: ${URL} - ${countryCode} [${data.length} items]`);
+        console.log(`CACHED: ${URL} - ${countryCode} [${Object.keys(data).length} days]`);
 
         return data;
     } catch (err) {
