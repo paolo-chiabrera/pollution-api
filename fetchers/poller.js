@@ -7,20 +7,28 @@ const { getCitiesByCountry, setCitiesByCountry } = require('./cities');
 const { setAverages } = require('./averages');
 const { setLatest } = require('./latest');
 
-const queue = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
+const queueCities = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
 const queueAverages = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
 const queueLatest = new pQueue({ concurrency: parseInt(QUEUE_CONCURRENCY, 10) || 2 });
+
+const logQueueStatus = () => {
+    console.log('\n--- Stats Queues ---');
+    console.log(`Averages todo: ${queueAverages.size}`);
+    console.log(`Cities todo: ${queueCities.size}`);
+    console.log(`Latest todo: ${queueLatest.size}`);
+    console.log('--- End ---\n');
+};
 
 const fetchData = async () => {
     try {
         const countries = await getCountries();
 
-        queue.add(() => setCountries());
+        setCountries();
 
         countries.forEach(async ({ code }) => {
             const cities = await getCitiesByCountry(code);
 
-            queue.add(() => setCitiesByCountry(code));
+            queueCities.add(() => setCitiesByCountry(code));
             queueAverages.add(() => setAverages(code));
 
             cities.forEach(({ city }) => {
@@ -36,6 +44,8 @@ const run = () => {
     fetchData();
 
     setInterval(fetchData, (parseInt(POLLING_INTERVAL_SECONDS, 10) || 3600) * 1000);
+
+    setInterval(logQueueStatus, 5 * 60 * 1000);
 };
 
 module.exports = {
