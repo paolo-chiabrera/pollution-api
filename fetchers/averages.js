@@ -1,4 +1,4 @@
-const { chain, isEqual, sortBy } = require('lodash');
+const { chain, isEqual, size, sortBy } = require('lodash');
 
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
@@ -40,7 +40,7 @@ const setAverages = async (countryCode = '') => {
         const data = await fetchAverages(countryCode);
         await cache.setProm(getKey(countryCode), data);
 
-        console.log(`CACHED: ${URL} - ${countryCode} [${Object.keys(data).length} days]`);
+        console.log(`CACHED: ${URL} - ${countryCode} [${size(data)} days]`);
 
         return data;
     } catch (err) {

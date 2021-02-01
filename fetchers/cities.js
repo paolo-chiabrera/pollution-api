@@ -1,4 +1,4 @@
-const { chain, isString } = require('lodash');
+const { chain, isString, size } = require('lodash');
 
 const axios = require('../utils/axios');
 const cache = require('../utils/cache');
@@ -30,7 +30,7 @@ const setCitiesByCountry = async (countryCode = '') => {
         const data = await fetchCities(countryCode);
         await cache.setProm(getKey(countryCode), data);
 
-        console.log(`CACHED: ${URL} - ${countryCode} [${data.length} items]`);
+        console.log(`CACHED: ${URL} - ${countryCode} [${size(data)} cities]`);
 
         return data;
     } catch (err) {
