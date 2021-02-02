@@ -9,6 +9,7 @@ const ENV = NODE_ENV || 'development';
 const cache = cacheManager.caching({
     prefix: `pollution:api:${ENV}`,
     store: redisStore,
+    ttl: 24 * 60 * 60, // seconds
     url: DATABASE_URL,
 });
 
